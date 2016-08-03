@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../__common/constexpr_addressof.hpp"
 #include "../__helper/in_place.hpp"
 
 namespace stl_backports {
@@ -213,12 +212,12 @@ public:
   }
 
   // observers
-  constexpr const _Tp *operator->() const {
+  // Non-constexpr because of addressof is not constexpr until C++17.
+  const _Tp *operator->() const {
     return const_cast<optional<_Tp> *>(this)->operator->();
   }
-  constexpr _Tp *operator->() {
-    return __common::__constexpr_addressof(this->__val);
-  }
+  // Non-constexpr because of addressof is not constexpr until C++17.
+  _Tp *operator->() { return std::addressof(this->__val); }
   constexpr const _Tp &operator*() const & {
     return **const_cast<optional<_Tp> *>(this);
   }

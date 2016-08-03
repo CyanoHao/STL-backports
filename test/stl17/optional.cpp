@@ -1042,10 +1042,20 @@ void main() {
 }
 }
 namespace value_neg {
-/*
-Nothing to do here.  Constructing an optional<T> with a U object where
-std::is_constructible<T, U>::value == true is libstdc++'s extension.
-*/
+// Nothing to do here.  Constructing an optional<T> with a U object where
+// std::is_constructible<T, U>::value == true is libstdc++'s extension.
+// int main() {
+//   {
+//     struct X {
+//       explicit X(int) {}
+//     };
+//     optional<X> ox{42};
+//     optional<X> ox2 = 42; // { dg-error "conversion" }
+//     optional<std::unique_ptr<int>> oup{new int};
+//     optional<std::unique_ptr<int>> oup2 = new int; // { dg-error "conversion"
+//     }
+//   }
+// }
 }
 namespace value {
 struct tracker {
@@ -1289,12 +1299,13 @@ void main() {
     static_assert(*o == 0x1234ABCD, "");
   }
 
-  {
-    constexpr long i = 0x1234ABCD;
-    constexpr optional<long> o = i;
-    static_assert(o, "");
-    static_assert(*o == 0x1234ABCD, "");
-  }
+  // Initialize a constexpr optional <T> in this style is GCC's extension.
+  // {
+  //   constexpr long i = 0x1234ABCD;
+  //   constexpr optional<long> o = i;
+  //   static_assert(o, "");
+  //   static_assert(*o == 0x1234ABCD, "");
+  // }
 
   {
     constexpr long i = 0x1234ABCD;
@@ -1310,12 +1321,13 @@ void main() {
     static_assert(*o == 0x1234ABCD, "");
   }
 
-  {
-    constexpr long i = 0x1234ABCD;
-    constexpr optional<long> o = std::move(i);
-    static_assert(o, "");
-    static_assert(*o == 0x1234ABCD, "");
-  }
+  // Initialize a constexpr optional <T> in this style is GCC's extension.
+  // {
+  //   constexpr long i = 0x1234ABCD;
+  //   constexpr optional<long> o = std::move(i);
+  //   static_assert(o, "");
+  //   static_assert(*o == 0x1234ABCD, "");
+  // }
 
   {
     constexpr long i = 0x1234ABCD;
@@ -1338,18 +1350,19 @@ void main() {
 }
 }
 namespace _2 {
-struct value_type {
-  int i;
-
-  void *operator&() { return nullptr; } // N.B. non-const
-};
-
-void main() {
-  constexpr optional<value_type> o{value_type{51}};
-  static_assert(o->i == 51, "");
-  static_assert(o->i == (*o).i, "");
-  static_assert(&o->i == &(*o).i, "");
-}
+// Nothing to do here. constexpr addressof is not available until C++17.
+// struct value_type {
+//   int i;
+//
+//   void *operator&() { return nullptr; } // N.B. non-const
+// };
+//
+// void main() {
+//   constexpr optional<value_type> o{value_type{51}};
+//   static_assert(o->i == 51, "");
+//   static_assert(o->i == (*o).i, "");
+//   static_assert(&o->i == &(*o).i, "");
+// }
 }
 namespace _3 {
 struct value_type {
@@ -1382,7 +1395,7 @@ struct value_type {
 
 void main() {
   {
-    constexpr optional<value_type> o = nullopt;
+    constexpr optional<value_type> o{nullopt};
     static_assert(!o, "");
   }
 
@@ -1836,12 +1849,20 @@ void main() {
 }
 }
 namespace make_optional_ {
+// Initialize a constexpr optional <T> in this style is GCC's extension.
+// void main() {
+//   constexpr int i = 42;
+//   constexpr auto o = make_optional(i);
+//   static_assert(std::is_same<decltype(o), const optional<int>>(), "");
+//   static_assert(o && *o == 42, "");
+//   static_assert(&*o != &i, "");
+// }
 void main() {
   constexpr int i = 42;
-  constexpr auto o = make_optional(i);
-  static_assert(std::is_same<decltype(o), const optional<int>>(), "");
-  static_assert(o && *o == 42, "");
-  static_assert(&*o != &i, "");
+  const auto o = make_optional(i);
+  VERIFY((std::is_same<decltype(o), const optional<int>>()));
+  VERIFY(o && *o == 42);
+  VERIFY(&*o != &i);
 }
 }
 namespace nullopt_ {
@@ -1852,10 +1873,11 @@ void main() {
   static_assert(std::is_literal_type<nullopt_t>(), "");
   static_assert(!std::is_default_constructible<nullopt_t>(), "");
 
-  {
-    constexpr optional<int> o = nullopt;
-    static_assert(!o, "");
-  }
+  // Initialize a constexpr optional <T> in this style is GCC's extension.
+  // {
+  //   constexpr optional<int> o = nullopt;
+  //   static_assert(!o, "");
+  // }
 
   {
     constexpr optional<int> o = {nullopt};
@@ -2430,11 +2452,12 @@ int main() {
   cons_test::copy::main();
   cons_test::default_::main();
   cons_test::move::main();
+  // cons_test::value_neg::main();
   cons_test::value::main();
   constexpr_test::cons::default_::main();
   constexpr_test::cons::value::main();
   constexpr_test::observer::_1::main();
-  constexpr_test::observer::_2::main();
+  // constexpr_test::observer::_2::main();
   constexpr_test::observer::_3::main();
   constexpr_test::observer::_4::main();
   constexpr_test::observer::_5::main();
