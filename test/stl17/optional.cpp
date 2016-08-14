@@ -1370,10 +1370,13 @@ struct value_type {
 };
 
 void main() {
+// There's a bug in GCC until version 6.
+#if !GCC_LT(6, 0)
   constexpr optional<value_type> o{value_type{51}};
   static_assert(o.value().i == 51, "");
   static_assert(o.value().i == (*o).i, "");
   static_assert(&o.value().i == &(*o).i, "");
+#endif
 }
 }
 namespace _4 {
