@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <exception>
+#include <type_traits>
 
 namespace stl_backports {
 namespace stl17 {
@@ -19,6 +20,10 @@ template <class _Tp>
 using in_place_type_t = in_place_tag (&)(__in_place_type<_Tp> *);
 template <std::size_t _Idx>
 using in_place_index_t = in_place_tag (&)(__in_place_index<_Idx> *);
+
+template <class _Tp> struct __is_in_place_type_t : std::false_type {};
+template <class _Tp>
+struct __is_in_place_type_t<in_place_type_t<_Tp>> : std::true_type {};
 
 inline in_place_tag in_place(__in_place *) { std::terminate(); }
 template <class _Tp> in_place_tag in_place(__in_place_type<_Tp> *) {

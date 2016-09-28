@@ -18,7 +18,7 @@
 /**
 Test suite for STL Backports
 
-optional since C++ 17
+optional since C++17
 
 This testsuite is originally from GCC's libstdc++.
 
@@ -31,7 +31,7 @@ Modified by Cyano Hao <c@cyano.cn>
 #include <type_traits>
 #include <vector>
 
-#include <stl_back/stl17/optional.hpp>
+#include <stl-back/stl17/optional.hpp>
 
 #include "../common/hooks.h"
 
